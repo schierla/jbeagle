@@ -17,6 +17,7 @@ jBeagle is based on
 
 jBeagle is released under the GNU GPL.
 
+
 How to use
 ==========
 
@@ -26,3 +27,15 @@ How to use
 
 jBeagle then shows a list of books present on the beagle. You can select a book and click Delete to remove the book.
 Click Upload and select a PDF file to upload it as a new book (You can use Calibre http://calibre-ebook.com/ to convert EPUB to PDF).
+
+
+How to run
+==========
+
+Option 1:
+- Import the project into Eclipse (Java + M2E)
+- Run the class de.schierla.jbeagle.JBeagle as a Java application
+
+Option 2:
+- compile project using *mvn compile assembly:single*
+- Execute the resulting file *target/jbeagle-0.1-SNAPSHOT-jar-with-dependencies.jar*
