@@ -12,8 +12,10 @@ jBeagle is based on
 - *bluecove* http://bluecove.org/ for bluetooth support
 - *jzlib* http://www.jcraft.com/jzlib/ for image compression
 - *JPedal* http://sourceforge.net/projects/jpedal/ for PDF rendering
+- the txtr beagle analysis of Florian Echtler http://floe.butterbrot.org/matrix/hacking/txtr/ 
+- and Ligius http://hackcorellation.blogspot.de/2013/07/txtr-beagle-part-two-software.html
 
-jBeagle is released under the GNU GPLv3.
+jBeagle is released under the GNU GPL.
 
 How to use
 ==========
@@ -22,7 +24,5 @@ How to use
 2. Switch the beagle into bluetooth mode (switch on, then hold the power key until the light flashes blue)
 3. Start jBeagle
 
-jBeagle then shows a list of books present on the beagle.
-You can select a book and click Delete to remove the book.
-Click Upload and select a PDF file to upload it as a new book.
-(You can use Calibre http://calibre-ebook.com/ to convert EPUB to PDF)
+jBeagle then shows a list of books present on the beagle. You can select a book and click Delete to remove the book.
+Click Upload and select a PDF file to upload it as a new book (You can use Calibre http://calibre-ebook.com/ to convert EPUB to PDF).
