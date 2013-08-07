@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.schierla</groupId>
 	<artifactId>jbeagle</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.1-SNAPSHOT</version>
 	<name>jBeagle</name>
 	<description>Java application for managing the txtr beagle</description>
 	<build>
