@@ -77,18 +77,24 @@ public class BeaglePDF {
 				metadata.put(PdfFileInformation.getFieldNames()[i], decoder
 						.getFileInformationData().getFieldValues()[i]);
 			}
-
 			int pc = decoder.getPageCount();
 			// if(pc > 100) pc = 100;
 			final int pages = pc;
+
 			String a = metadata.get("Author");
 			if (a == null || a.isEmpty())
 				a = "No author";
 			final String author = a;
+
+			String name = file.getName();
+			if (name.toLowerCase().endsWith(".pdf"))
+				name = name.substring(0, name.length() - 4);
+			name = name.replace('_', ' ');
 			String t = metadata.get("Title");
 			if (t == null || t.isEmpty())
-				t = "No title";
+				t = name;
 			final String title = t;
+
 			long id = (((long) Math.abs(author.hashCode())) << 16)
 					+ Math.abs(title.hashCode());
 			final BlockingQueue<BufferedImage> queue = new ArrayBlockingQueue<BufferedImage>(
