@@ -24,7 +24,9 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -32,6 +34,9 @@ import java.util.concurrent.BlockingQueue;
 import org.jpedal.PdfDecoder;
 import org.jpedal.exception.PdfException;
 import org.jpedal.objects.PdfFileInformation;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * Helper class for uploading PDF documents to the txtr beagle
@@ -78,9 +83,21 @@ public class BeaglePDF {
 						.getFileInformationData().getFieldValues()[i]);
 			}
 			int pc = decoder.getPageCount();
+			Document outline = decoder.getOutlineAsXML();
+			final List<Integer> bookmarks = new ArrayList<Integer>();
+			if (outline != null) {
+				NodeList titles = outline.getElementsByTagName("title");
+				for (int i = 0; i < titles.getLength(); i++) {
+					Node pageAttribute = titles.item(i).getAttributes()
+							.getNamedItem("page");
+					if (pageAttribute != null) {
+						bookmarks.add(Integer.parseInt(pageAttribute
+								.getTextContent()));
+					}
+				}
+			}
 			// if(pc > 100) pc = 100;
 			final int pages = pc;
-
 			String a = metadata.get("Author");
 			if (a == null || a.isEmpty())
 				a = "No author";
@@ -115,7 +132,7 @@ public class BeaglePDF {
 								drawTitlePage(author, title, page, graphics);
 							} else {
 								drawBookPage((pages - 1), (i - 1), page,
-										graphics);
+										graphics, bookmarks);
 							}
 							queue.put(im);
 							if (progress != null)
@@ -154,9 +171,13 @@ public class BeaglePDF {
 	}
 
 	private static void drawBookPage(int pages, int i, BufferedImage page,
-			Graphics output) {
+			Graphics output, List<Integer> bookmarks) {
 		output.drawImage(page, 0, 0, 600, 800, null);
 		output.setColor(Color.GRAY);
 		output.fillRect(0, 795, (600 * i / pages), 5);
+		output.setColor(Color.BLACK);
+		for (Integer nr : bookmarks) {
+			output.drawLine(600 * (nr-1) / pages, 797, 600 * (nr-1) / pages, 800);
+		}
 	}
 }
