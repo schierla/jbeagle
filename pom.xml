@@ -22,7 +22,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>de.schierla.jbeagle.JBeagle</mainClass>
+							<mainClass>de.schierla.jbeagle.ui.JBeagle</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>

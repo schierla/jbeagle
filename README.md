@@ -34,7 +34,7 @@ How to run
 
 Option 1:
 - Import the project into Eclipse (Java + M2E)
-- Run the class de.schierla.jbeagle.JBeagle as a Java application
+- Run the class de.schierla.jbeagle.ui.JBeagle as a Java application
 
 Option 2:
 - compile project using *mvn compile assembly:single*

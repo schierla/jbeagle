@@ -17,9 +17,7 @@
  */
 package de.schierla.jbeagle;
 
-import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -28,58 +26,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
 
 import javax.microedition.io.StreamConnection;
-
-import com.jcraft.jzlib.Deflater;
-import com.jcraft.jzlib.DeflaterOutputStream;
-import com.jcraft.jzlib.JZlib;
 
 /**
  * Class handling the communication with the txtr beagle
  */
-public class Beagle {
-
-	private static byte[] compressBuffer(byte[] rawBuffer) throws IOException {
-		Deflater deflater = new Deflater();
-		deflater.init(JZlib.Z_DEFAULT_COMPRESSION, 27, 9);
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		DeflaterOutputStream dos = new DeflaterOutputStream(out, deflater);
-		dos.write(rawBuffer);
-		dos.flush();
-		dos.close();
-		return out.toByteArray();
-	}
-
-	private static byte[] createRawBuffer(BufferedImage page) {
-		byte[] raw = new byte[800 * 600 / 2 + 64];
-		for (int y = 0; y < 800; y++) {
-			for (int x = 0; x < 600; x += 2) {
-				raw[y * 300 + x / 2] = (byte) (four_bits(page.getRGB(x + 1, y)) | four_bits(page
-						.getRGB(x, y)) * 0x10);
-			}
-		}
-		for (int i = 800 * 600 / 2; i < 800 * 600 / 2 + 64; i++) {
-			raw[i] = -127;
-		}
-		return raw;
-	}
-
-	private static byte[] encodeImage(BufferedImage page) throws IOException {
-		if (page.getWidth() != 600 || page.getHeight() != 800)
-			throw new IllegalArgumentException("The image has to be 600x800.");
-		byte[] rawBuffer = createRawBuffer(page);
-		return compressBuffer(rawBuffer);
-	}
-
-	private static int four_bits(int rgb) {
-		int r = (rgb & 0x00ff0000) / 0x00010000;
-		int g = (rgb & 0x0000ff00) / 0x00000100;
-		int b = (rgb & 0x000000ff) / 0x00000001;
-		int gray = (int) (r * 0.2126 + g * 0.7152 + b * 0.0722);
-		return (gray & 0xE0) / 0x10;
-	}
+public class BeagleConnector {
 
 	private BufferedReader input;
 
@@ -87,7 +40,7 @@ public class Beagle {
 
 	private OutputStream outputStream;
 
-	public Beagle(StreamConnection connection) throws IOException {
+	public BeagleConnector(StreamConnection connection) throws IOException {
 		input = new BufferedReader(new InputStreamReader(
 				connection.openInputStream()));
 		outputStream = connection.openOutputStream();
@@ -215,8 +168,14 @@ public class Beagle {
 			throw new IOException("Invalid response " + line);
 	}
 
+	public interface PageSource {
+		byte[] getCompressedPage(int nr);
+	}
+
 	/**
-	 * Uploads a book with the given pages
+	 * Starts the upload of a book (upload pages using
+	 * {@link #uploadPage(int, byte[])}, conclude the upload using
+	 * {@link #endBook()})
 	 * 
 	 * @param id
 	 *            book id (16 bytes, hex)
@@ -224,19 +183,12 @@ public class Beagle {
 	 *            book title
 	 * @param author
 	 *            book author
-	 * @param pages
-	 *            number of pages to upload
-	 * @param queue
-	 *            pages of the book (the first is used on the book selection
-	 *            screen)
 	 * @throws IOException
-	 * @throws InterruptedException
 	 */
-	public void uploadBook(String id, String title, String author, int pages,
-			BlockingQueue<BufferedImage> queue) throws IOException,
-			InterruptedException {
-		String line;
+	public void uploadBook(String id, String title, String author)
+			throws IOException {
 
+		String line;
 		BeagleBook book = new BeagleBook();
 		book.setId(id);
 		book.setTitle(title);
@@ -249,19 +201,48 @@ public class Beagle {
 		if (!"TITLEOK".equals(line = read()))
 			throw new IOException("Invalid response " + line);
 		write("AUTHOR " + book.getAuthorBase64());
-		;
+
 		if (!"AUTHOROK".equals(line = read()))
 			throw new IOException("Invalid response " + line);
+		uploadingBook = true;
+	}
 
-		for (int i = 0; i < pages; i++) {
-			write("PAGE " + i);
-			write(encodeImage(queue.take()));
+	boolean uploadingBook = false;
+
+	/**
+	 * Uploads a page for the current book
+	 * 
+	 * @param nr
+	 *            page number (0-based)
+	 * @param compressedImage
+	 *            compressed image to upload as page
+	 * @throws IOException
+	 */
+	public void uploadPage(int nr, byte[] compressedImage) throws IOException {
+		if (uploadingBook) {
+			String line;
+			write("PAGE " + nr);
+			write(compressedImage);
+
 			if (!"PAGEOK".equals(line = read()))
 				throw new IOException("Invalid response " + line);
+
 		}
-		write("ENDBOOK");
-		if (!"ENDBOOKOK".equals(line = read()))
-			throw new IOException("Invalid response " + line);
+	}
+
+	/**
+	 * Conclude the book upload
+	 * 
+	 * @throws IOException
+	 */
+	public void endBook() throws IOException {
+		if (uploadingBook) {
+			uploadingBook = false;
+			write("ENDBOOK");
+			String line;
+			if (!"ENDBOOKOK".equals(line = read()))
+				throw new IOException("Invalid response " + line);
+		}
 	}
 
 	/**

@@ -46,20 +46,19 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileFilter;
 
-import de.schierla.jbeagle.Beagle;
 import de.schierla.jbeagle.BeagleBook;
-import de.schierla.jbeagle.BeaglePDF;
-import de.schierla.jbeagle.BeaglePDF.ProgressListener;
+import de.schierla.jbeagle.BeagleConnector;
 import de.schierla.jbeagle.BeagleUtil;
+import de.schierla.jbeagle.BeagleUtil.ProgressListener;
 
-public class BeagleFrame extends JFrame {
+public class JBeagle extends JFrame {
 	private static final long serialVersionUID = -3803590812601005122L;
 	JLabel title, author, page, id;
 	JButton upload, delete;
 	BeagleBook book;
 	private JList<BeagleBook> books;
 	private DefaultListModel<BeagleBook> beagleBooks = new DefaultListModel<BeagleBook>();
-	private Beagle beagle;
+	private BeagleConnector beagle;
 	private JLabel progress;
 	private JPanel panel;
 
@@ -68,7 +67,7 @@ public class BeagleFrame extends JFrame {
 	private JScrollPane scrollPane;
 	private JPanel detail;
 
-	public BeagleFrame() {
+	public JBeagle() {
 		setTitle("jBeagle");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 
@@ -255,7 +254,7 @@ public class BeagleFrame extends JFrame {
 			@Override
 			public void run() {
 				try {
-					BeaglePDF.uploadPDF(beagle, file, new ProgressListener() {
+					BeagleUtil.uploadPDF(beagle, file, new ProgressListener() {
 						@Override
 						public void progressChanged(int page, int count) {
 							showProgress("Uploading page " + page + " of "
@@ -330,6 +329,10 @@ public class BeagleFrame extends JFrame {
 		author.setText(book.getAuthor());
 		page.setText(book.getCurrentPage() + " (" + book.getFirstPage() + " - "
 				+ book.getLastPage() + ")");
+	}
+
+	public static void main(String[] args) {
+		new JBeagle();
 	}
 
 }
