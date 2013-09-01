@@ -229,6 +229,14 @@ public class JBeagle extends JFrame {
 	protected void uploadBook() {
 		if (beagle == null)
 			return;
+		
+//		try {
+//			BufferedImage im = ImageIO.read(new File("006.png"));
+//			beagle.uploadUtilityPage(6, BeagleCompressor.encodeImage(im));
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+		
 		final JFileChooser fc = new JFileChooser();
 		fc.setFileFilter(new FileFilter() {
 			@Override

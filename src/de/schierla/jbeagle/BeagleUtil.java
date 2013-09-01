@@ -20,6 +20,7 @@ package de.schierla.jbeagle;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -108,22 +109,34 @@ public class BeagleUtil {
 			final String title = getMetadata(decoder, "Title", name);
 			final int pages = decoder.getPageCount();
 
-			final long id = (((long) Math.abs(author.hashCode())) << 16)
-					+ Math.abs(title.hashCode());
-			String uuid = Long.toHexString(Math.abs(id)).toUpperCase();
+			final long id = (((long) author.hashCode()) << 32)
+					+ title.hashCode();
+			String uuid = Long.toHexString(id).toUpperCase();
 
 			final BlockingQueue<byte[]> queue = new ArrayBlockingQueue<byte[]>(
 					3);
 			final PagePreview preview = null; // new PagePreview(title);
+
+			// continue book if it already exists
+			int start = 0;
+			List<BeagleBook> existingBooks = beagle.listBooks();
+			for (BeagleBook book : existingBooks) {
+				if (uuid.equals(book.getId())) {
+					start = book.getLastPage();
+				}
+			}
+			final int startpage = start;
+
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
 					BeagleRenderer renderer = new BeagleRenderer(decoder,
 							author, title);
 					try {
-						queue.put(BeagleCompressor.encodeImage(renderer.render(
-								0, true)));
-						for (int i = 0; i < pages; i++) {
+						if (startpage == 0)
+							queue.put(BeagleCompressor.encodeImage(renderer
+									.render(0, true)));
+						for (int i = (startpage == 0 ? 0 : startpage - 1); i < pages; i++) {
 							BufferedImage image = renderer.render(i, false);
 							if (preview != null)
 								preview.showPage(image);
@@ -136,7 +149,7 @@ public class BeagleUtil {
 			}).start();
 
 			beagle.uploadBook(uuid, title, author);
-			for (int i = 0; i <= pages; i++) {
+			for (int i = start; i <= pages; i++) {
 				beagle.uploadPage(i, queue.take());
 				progress.progressChanged(i, pages);
 			}

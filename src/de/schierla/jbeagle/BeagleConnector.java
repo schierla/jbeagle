@@ -231,6 +231,26 @@ public class BeagleConnector {
 	}
 
 	/**
+	 * Uploads a utility page
+	 * 
+	 * @param nr
+	 *            page number (0-based)
+	 * @param compressedImage
+	 *            compressed image to upload as page
+	 * @throws IOException
+	 */
+	public void uploadUtilityPage(int nr, byte[] compressedImage)
+			throws IOException {
+		String line;
+		write("UTILITYPAGE " + nr);
+		write(compressedImage);
+
+		if (!"PAGEOK".equals(line = read()))
+			throw new IOException("Invalid response " + line);
+
+	}
+
+	/**
 	 * Conclude the book upload
 	 * 
 	 * @throws IOException
