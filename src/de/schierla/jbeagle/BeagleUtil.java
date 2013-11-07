@@ -128,7 +128,6 @@ public class BeagleUtil {
 			final int startpage = start;
 
 			new Thread(new Runnable() {
-				@Override
 				public void run() {
 					BeagleRenderer renderer = new BeagleRenderer(decoder,
 							author, title);
@@ -142,7 +141,9 @@ public class BeagleUtil {
 								preview.showPage(image);
 							queue.put(BeagleCompressor.encodeImage(image));
 						}
-					} catch (InterruptedException | IOException e) {
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
 						e.printStackTrace();
 					}
 				}

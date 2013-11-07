@@ -37,5 +37,5 @@ Option 1:
 - Run the class de.schierla.jbeagle.ui.JBeagle as a Java application
 
 Option 2:
-- compile project using *mvn compile assembly:single*
-- Execute the resulting file *target/jbeagle-0.1-SNAPSHOT-jar-with-dependencies.jar*
+- compile project using *mvn package*
+- Execute the resulting file *target/jbeagle-0.1.1-SNAPSHOT-jar-with-dependencies.jar*

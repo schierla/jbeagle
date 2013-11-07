@@ -84,7 +84,6 @@ public class JBeagle extends JFrame {
 		books = new JList<BeagleBook>(beagleBooks);
 		books.setBorder(new EmptyBorder(5, 5, 5, 5));
 		books.addListSelectionListener(new ListSelectionListener() {
-			@Override
 			public void valueChanged(ListSelectionEvent arg0) {
 				if (books.getSelectedIndex() == -1)
 					book = null;
@@ -184,13 +183,11 @@ public class JBeagle extends JFrame {
 		detail.add(delete, gbc_delete);
 
 		upload.addActionListener(new ActionListener() {
-			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				uploadBook();
 			}
 		});
 		delete.addActionListener(new ActionListener() {
-			@Override
 			public void actionPerformed(ActionEvent e) {
 				deleteBook();
 			}
@@ -207,7 +204,6 @@ public class JBeagle extends JFrame {
 
 	private void searchForBeagleAsync() {
 		pool.execute(new Runnable() {
-			@Override
 			public void run() {
 				try {
 					while (beagle == null) {
@@ -259,11 +255,9 @@ public class JBeagle extends JFrame {
 	private void uploadPDFAsync(final File file) {
 		showProgress("Uploading book...");
 		pool.execute(new Runnable() {
-			@Override
 			public void run() {
 				try {
 					BeagleUtil.uploadPDF(beagle, file, new ProgressListener() {
-						@Override
 						public void progressChanged(int page, int count) {
 							showProgress("Uploading page " + page + " of "
 									+ count + "...");
@@ -290,7 +284,6 @@ public class JBeagle extends JFrame {
 		showProgress("Deleting book...");
 
 		pool.execute(new Runnable() {
-			@Override
 			public void run() {
 				try {
 					beagle.deleteBook(id);
@@ -315,7 +308,6 @@ public class JBeagle extends JFrame {
 
 	private void showProgress(final String text) {
 		SwingUtilities.invokeLater(new Runnable() {
-			@Override
 			public void run() {
 				progress.setText(text);
 			}
