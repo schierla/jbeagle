@@ -26,6 +26,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -225,14 +226,14 @@ public class JBeagle extends JFrame {
 	protected void uploadBook() {
 		if (beagle == null)
 			return;
-		
-//		try {
-//			BufferedImage im = ImageIO.read(new File("006.png"));
-//			beagle.uploadUtilityPage(6, BeagleCompressor.encodeImage(im));
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-		
+
+		// try {
+		// BufferedImage im = ImageIO.read(new File("006.png"));
+		// beagle.uploadUtilityPage(6, BeagleCompressor.encodeImage(im));
+		// } catch (IOException e) {
+		// e.printStackTrace();
+		// }
+
 		final JFileChooser fc = new JFileChooser();
 		fc.setFileFilter(new FileFilter() {
 			@Override
@@ -299,7 +300,12 @@ public class JBeagle extends JFrame {
 	private void updateBooks() {
 		try {
 			showProgress("Retrieving books...");
-			setBooks(beagle.listBooks());
+			final List<BeagleBook> bookList = beagle.listBooks();
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					setBooks(bookList);
+				}
+			});
 			showProgress("Done");
 		} catch (IOException e) {
 			e.printStackTrace();
