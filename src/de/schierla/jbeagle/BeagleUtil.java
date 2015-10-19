@@ -54,7 +54,7 @@ public class BeagleUtil {
 		if (devices == null)
 			return null;
 		for (RemoteDevice r : devices) {
-			if ("Beagle".equals(r.getFriendlyName(false))) {
+			if ("Beagle".equals(r.getFriendlyName(false)) || "txtr beagle".equals(r.getFriendlyName(false)) ) {
 				try {
 					StreamConnection connection = (StreamConnection) Connector
 							.open("btspp://"
