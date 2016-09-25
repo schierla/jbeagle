@@ -235,6 +235,7 @@ public class JBeagle extends JFrame {
 		// }
 
 		final JFileChooser fc = new JFileChooser();
+		fc.setMultiSelectionEnabled(true);
 		fc.setFileFilter(new FileFilter() {
 			@Override
 			public String getDescription() {
@@ -249,22 +250,24 @@ public class JBeagle extends JFrame {
 		});
 
 		if (JFileChooser.APPROVE_OPTION == fc.showOpenDialog(this)) {
-			uploadPDFAsync(fc.getSelectedFile());
+			uploadPDFAsync(fc.getSelectedFiles());
 		}
 	}
 
-	private void uploadPDFAsync(final File file) {
+	private void uploadPDFAsync(final File[] files) {
 		showProgress("Uploading book...");
 		pool.execute(new Runnable() {
 			public void run() {
 				try {
-					BeagleUtil.uploadPDF(beagle, file, new ProgressListener() {
-						public void progressChanged(int page, int count) {
-							showProgress("Uploading page " + page + " of "
-									+ count + "...");
-						}
-					});
-					updateBooks();
+					for (File file : files) {
+						BeagleUtil.uploadPDF(beagle, file, new ProgressListener() {
+							public void progressChanged(int page, int count) {
+								showProgress("Uploading page " + page + " of "
+										+ count + "...");
+							}
+						});					
+						updateBooks();
+					}
 				} catch (IOException ex) {
 					showProgress("Error: " + ex.getMessage());
 					ex.printStackTrace();
