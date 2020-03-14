@@ -57,25 +57,15 @@
 			<version>4.45-b-105</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.bluecove</groupId>
-			<artifactId>bluecove</artifactId>
-			<version>2.1.1-SNAPSHOT</version>
+		    <groupId>io.ultreia</groupId>
+		    <artifactId>bluecove</artifactId>
+		    <version>2.1.1</version>
 		</dependency>
 	</dependencies>
 	<repositories>
 		<repository>
 			<id>geomajas</id>
 			<url>http://maven.geomajas.org/</url>
-		</repository>
-		<repository>
-			<id>pyx4me-web-snapshot</id>
-			<url>http://www.pyx4me.com/maven2-snapshot</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
 		</repository>
 	</repositories>
 </project>
